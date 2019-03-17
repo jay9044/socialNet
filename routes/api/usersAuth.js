@@ -8,6 +8,7 @@ const passport = require("passport"); // for protected route
 
 //Load validator
 const validateRegisterInput = require("../../validator/register");
+const validateLoginInput = require("../../validator/login");
 
 //load user model
 const User = require("../models/UsersAuth");
@@ -68,6 +69,15 @@ router.post("/register", (req, res) => {
 //@access public
 
 router.post("/login", (req, res) => {
+  //every route that takes data
+  //req.body is everything sent to this route
+  const { errors, isValid } = validateLoginInput(req.body); //destructuring
+
+  //check for errors
+  if (!isValid) {
+    return res.status(400).json(errors); //if not valid it will return the errors object
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
@@ -75,7 +85,7 @@ router.post("/login", (req, res) => {
   User.findOne({ email }).then(user => {
     //check for user
     if (!user) {
-      errors.email = "Email already exists";
+      errors.email = "User not found";
       return res.status(404).json(errors);
     }
 
@@ -100,7 +110,8 @@ router.post("/login", (req, res) => {
           }
         );
       } else {
-        return res.status(400).json({ errorPassword: "wrong password" });
+        errors.password = "Wrong password";
+        return res.status(400).json(errors);
       }
     });
   });
