@@ -1,10 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-
 const passport = require("passport");
 
-//Section 2
+//Load Routes
 const usersAuth = require("./routes/api/usersAuth");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");

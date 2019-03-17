@@ -5,6 +5,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport"); // for protected route
+
+//Load validator
+const validateRegisterInput = require("../../validator/register");
+
 //load user model
 const User = require("../models/UsersAuth");
 
@@ -17,6 +21,15 @@ router.get("/test", (req, res) => res.json({ message: "Users works" })); // refe
 //@desc   register user
 //@access public
 router.post("/register", (req, res) => {
+  //every route that takes data
+  //req.body is everything sent to this route
+  const { errors, isValid } = validateRegisterInput(req.body); //destructuring
+
+  //check for errors
+  if (!isValid) {
+    return res.status(400).json(errors); //if not valid it will return the errors object
+  }
+
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({
